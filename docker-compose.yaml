@@ -1,0 +1,40 @@
+services:
+  db:
+#    host name used for pgadmin will be: host.docker.internal
+    container_name: container-postgres
+    image: postgres
+    restart: always
+    user: postgres
+    ports:
+      - "5444:5432"
+    environment:
+      POSTGRES_PASSWORD: testing
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - type: bind
+        source: ./docker/postgres/data
+        target: /var/lib/postgresql/data
+
+  pgadmin:
+    container_name: container-pgadmin
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root
+      PGADMIN_DEFAULT_PASSWORD: root
+    volumes:
+      - type: bind
+        source: ./docker/postgres/pgadmin
+        target: /var/lib/pgadmin
+
+volumes:
+  pgdata:
