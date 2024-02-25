@@ -1,0 +1,186 @@
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+GET question
+DELETE question
+
+PUT question
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "n_gram_analyzer": {
+          "tokenizer": "autocomplete",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "custom_analyzer": {
+          "filter": [
+            "lowercase",
+            "porter_stem"
+          ],
+          "tokenizer": "standard"
+        },
+        "text_general": {
+          "filter": [
+            "lowercase",
+            "stop",
+            "porter_stem"
+          ],
+          "tokenizer": "standard"
+        },
+        "autocomplete": {
+          "tokenizer": "autocomplete",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "autocomplete_search": {
+          "tokenizer": "lowercase"
+        }
+      },
+      "tokenizer": {
+        "autocomplete": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 20,
+          "token_chars": [
+            "letter"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "keyword",
+        "fields": {
+          "text": {
+            "type": "text",
+            "analyzer": "n_gram_analyzer"
+          }
+        }
+      },
+      "date": {
+        "type": "date"
+      },
+      "tags": {
+        "type": "keyword",
+        "fields": {
+          "text": {
+            "type": "text",
+            "analyzer": "n_gram_analyzer"
+          }
+        }
+      },
+      "link": {
+        "type": "keyword"
+      },
+      "noteLink": {
+        "type": "keyword"
+      },
+      "topic": {
+        "type": "keyword",
+        "fields": {
+          "text": {
+            "type": "text",
+            "analyzer": "n_gram_analyzer"
+          }
+        }
+      },
+      "comment": {
+        "type": "text"
+      },
+      "isPass": {
+        "type": "boolean"
+      },
+      "isImportant": {
+        "type": "boolean"
+      }
+    }
+  }
+}
+
+POST question/_doc
+{
+  "questionName": "testing title",
+  "questionLink": "link"
+}
+
+POST question/_doc
+{
+  "questionName": "Kth Largest Element in an Array",
+  "questionLink": "testing.axp.com"
+}
+
+GET question/_search
+{
+  "query": {
+    "match": {
+      "questionName": "element"
+    }
+  }
+}
+
+GET question/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {"term": {
+          "questionName": {
+            "value": "ele"
+          }
+        }}
+      ]
+    }
+
+  }
+}
+
+GET question/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {"match": {
+          "questionName": "te"
+        }}
+      ]
+    }
+  }
+}
+
+
+GET question/_search
+{
+  "from":0,
+  "query":{
+    "bool":{
+      "should":[{"query_string": {
+        "default_field": "questionName",
+        "query": "test",
+        "analyzer": "n_gram_analyer"
+      }}]
+
+    }
+  }
+}
+
+GET question/_search
+
+GET question/_search
+{
+  "query": {
+    "match": {
+      "questionName": "test"
+    }
+  }
+
+}
